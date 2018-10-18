@@ -1,31 +1,8 @@
 #!/bin/bash
 
 #make a new temp folder and copy all cloud_controller_ng log file into this new temp folder, then unzip.
-if [ $1 -ne 0 ]
-then
-  archive_file=$1
-else
-  echo "Archive File Not Found"
-  exit 1
-fi
 
-path_name="/tmp/$(echo $archive_file | cut -f 1 -d ".")"
-mkdir $path_name
-unzip $archive_file -d $path_name
-
-if [ $? -ne 0 ]
-then
-  echo "Failed to Extract $archive_file"
-  exit 1
-fi
-
-for f in $path_name
-do
-  file_name=$(echo $path_name | grep -o '[^\/]*$' | sed -E "s|\.[a-zA-Z]*$||")
-  mkdir "$path_name/$file_name"
-  tar -xvzf $f -C "$path/$file_name/"
-done
-
+mkdir tmp
 cp -f cloud_controller_ng.log* tmp
 gunzip tmp/cloud_controller_ng*
 es_host="10.193.26.207:9200"
@@ -57,7 +34,7 @@ do
 #    bash native regex is also slow
   done < $f
   echo "End Time: $SECONDS"
-  nohup url -s -H "Content-Type: application/x-ndjson" -XPOST  "$es_host/myindex/cloud_controller/_bulk" --data-binary @$outfile > /dev/null 2>&1
+  nohup curl -s -H "Content-Type: application/x-ndjson" -XPOST  "$es_host/myindex/_doc/_bulk" --data-binary @$outfile > /dev/null 2>&1
 done
 
 #https://stackoverflow.com/questions/5624969/how-to-reference-captures-in-bash-regex-replacement
