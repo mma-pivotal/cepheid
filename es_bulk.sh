@@ -1,29 +1,30 @@
 #!/bin/bash
 
 #make a new temp folder and copy all cloud_controller_ng log file into this new temp folder, then unzip.
-if [[ $1 -ne 0 ]]
+if [ $1 -ne 0 ]
 then
   archive_file=$1
 else
   echo "Archive File Not Found"
-  return
+  exit 1
 fi
 
 path_name="/tmp/$(echo $archive_file | cut -f 1 -d ".")"
 mkdir $path_name
 unzip $archive_file -d $path_name
 
-if [[ $? -ne 0 ]]
+if [ $? -ne 0 ]
 then
   echo "Failed to Extract $archive_file"
-  return 1
+  exit 1
 fi
 
 for f in $path_name
 do
   file_name=$(echo $path_name | grep -o '[^\/]*$' | sed -E "s|\.[a-zA-Z]*$||")
   mkdir "$path_name/$file_name"
-  tar -xvzf $f -C "$path"
+  tar -xvzf $f -C "$path/$file_name/"
+done
 
 cp -f cloud_controller_ng.log* tmp
 gunzip tmp/cloud_controller_ng*

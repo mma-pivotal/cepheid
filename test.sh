@@ -77,7 +77,7 @@ for f in $path_name/*
 do
   #first extrcation, extract instance logs from deployment
   deployment_name=$(echo $f | rev | cut -f 1 -d "/" | cut -f 2- -d "." | rev)
-  sub_path="$deployment_name/$file_name"
+  sub_path="$path_name/$deployment_name"
   mkdir $sub_path
   tar -xvzf $f -C $sub_path
   for sub_f in $sub_path/*
