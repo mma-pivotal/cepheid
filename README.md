@@ -56,6 +56,7 @@ Example:
 
 After execution you should see a file structure like below:
 
+```
 /tmp/cloud_controller-1539b798d482/
 └── cf-421763892047a2991301.cloud_controller-20181017-020536-641577571
     ├── cloud_controller.6ee013f3-b9ec-4e09-9835-fdb20de2a169.2018-10-17-02-03-18
@@ -76,3 +77,4 @@ After execution you should see a file structure like below:
     │   │   ├── post-start.stdout.log
     │   │   ├── pre-start.stderr.log
     │   │   └── pre-start.stdout.log
+```
