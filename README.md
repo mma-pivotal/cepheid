@@ -1,6 +1,6 @@
 # ElasticSearch Bulk Upload Script
 
-This script is still incomplete.
+This project is in a very early stage.
 
 ## Prepare ES server
 
@@ -37,7 +37,7 @@ Usage:
 es-bulk.sh <your_es_host>
 
 After execution, go to (http://<es_host>:5601/app/kibana#/management/elasticsearch/index_management/home?\_g=())
-You should then see the **Docs Count** is increased, meaning logs are being imported.
+You should then see the **Docs Count** increased, meaning logs are being imported.
 
 Next go to **Management** > **Index Patterns** > **Create Index Pattern** , create a index pattern so that you can search it, select timestamp as timestamp filter and click Create.
 Then go to **Discover** and make sure you have select the correct Index Pattern (dropbox in upper left corner) and correct time range (From: 2018-10-17 00:00:00.000 To: 2018-10-17 23:59:59.999)
