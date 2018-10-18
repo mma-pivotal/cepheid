@@ -5,7 +5,7 @@
 mkdir tmp
 cp -f cloud_controller_ng.log* tmp
 gunzip tmp/cloud_controller_ng*
-es_host="10.193.26.207:9200"
+es_host=$1
 
 FILES="$PWD/tmp/*"
 

@@ -1,8 +1,8 @@
-#ElasticSearch Bulk Upload Script
+# ElasticSearch Bulk Upload Script
 
 This script is still incomplete.
 
-##Prepare ES server
+## Prepare ES server
 
 Go to your Kibana top page (http://<kibana_host>:5601/app/kibana#/home?\_g=()) then click **Dev Tools** on the left panel.
 Enter the following content into console and click the green triangle button.
@@ -27,7 +27,7 @@ PUT myindex
 If you see error message saying index already exists, Click **Management** > **Index Management** and delete the existing index.
 This is to save the disk usage of ES server.
 
-##es-bulk.sh
+## es-bulk.sh
 
 Upload cloud_controller_ng log to specified ES server.
 Put the sample log file in the same directory of this script and run the script.
@@ -42,7 +42,7 @@ You should then see the **Docs Count** is increased, meaning logs are being impo
 Next go to **Management** > **Index Patterns** > **Create Index Pattern** , create a index pattern so that you can search it, select timestamp as timestamp filter and click Create.
 Then go to **Discover** and make sure you have select the correct Index Pattern (dropbox in upper left corner) and correct time range (From: 2018-10-17 00:00:00.000 To: 2018-10-17 23:59:59.999)
 
-##test.sh
+## test.sh
 Extract a given archive_file from PCF, currently only support cloud_controller_ng and gorouter.
 The target directory is /tmp, make sure you have enough free disk space.
 
