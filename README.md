@@ -1,6 +1,9 @@
 # ElasticSearch Bulk Upload Script
 
 This project is in a very early stage.
+Current challenge is the speed of these scripts, the execution time when parsing a big log file is somehow unacceptable.
+I am suspecting this is due to the heavy usage of echo to outfile, in other words disk IO is the main bottle neck.
+Currently only tested on MacOS. Need to do profiling on different platform and possibly change the way of parsing (load file into memory and parse at once, then output to disk).
 
 ## Prepare ES server
 
@@ -43,6 +46,7 @@ Next go to **Management** > **Index Patterns** > **Create Index Pattern** , crea
 Then go to **Discover** and make sure you have select the correct Index Pattern (dropbox in upper left corner) and correct time range (From: 2018-10-17 00:00:00.000 To: 2018-10-17 23:59:59.999)
 
 ## test.sh
+
 Extract a given archive_file from PCF, currently only support cloud_controller_ng and gorouter.
 The target directory is /tmp, make sure you have enough free disk space.
 
@@ -78,3 +82,10 @@ After execution you should see a file structure like below:
     │   │   ├── pre-start.stderr.log
     │   │   └── pre-start.stdout.log
 ```
+
+Note that I didn't paste complete output here but this script should work well with multiple instances.
+
+## switch_timestamp.sh
+
+A simple script to switch the epoch timestamp in cloud controller log file to human readable format, currently only support MacOS.
+Need to add support for Ubuntu and probably also support milliseconds in epoch timestamp.
