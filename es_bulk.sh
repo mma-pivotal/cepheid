@@ -1,37 +1,6 @@
 #! /bin/bash
-
-bulk_upload() {
-  FILES="$1/*"
-
-  for f in $FILES
-  do
-    echo "Processing $f"
-    outfile="$f.out"
-    echo "Outfile: $outfile"
-    echo "Start Time: $SECONDS"
-    while read -r p; do
-      echo "{\"index\":{}}" >> $outfile
-      echo "$p" | sed -E 's|([0-9]{10})\.([0-9]{3})[0-9]+|\1\2|g' >> $outfile
-  #    sed is very slow, takes more than 1 hour to finish 5 cc log file parsing.
-
-  #    text=$(echo $p | cut -f 2- -d ",")
-  #    echo "${p:0:23}${p:24:3},$text" >> $outfile
-  #    substring is even worse
-
-  #    re="([0-9]{10})\.([0-9]{3})[0-9]+"
-  #
-  #    [[ $p =~ $re ]]
-  #    line=$()
-  #    hello="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
-  #
-  #    echo "" >> $outfile
-  #    bash native regex is also slow
-    done < $f
-    echo "End Time: $SECONDS"
-    nohup url -s -H "Content-Type: application/x-ndjson" -XPOST  "$es_host/$job_name/cloud_controller/_bulk" --data-binary @$outfile > /dev/null 2>&1
-  done
-  return 0
-}
+es_host="10.193.26.207:9200"
+mapping_name="log"
 
 if [[ ! -z "$1" ]]
 then
@@ -57,6 +26,7 @@ case "$job_name" in
     job_file_name="access"
     ;;
   *)
+    echo "usage: es_bulk.sh <path_to_archive_file> <job_name>"
     echo "currently only support cloud_controller_ng|gorouter logs"
     exit 1
     ;;
@@ -87,9 +57,20 @@ do
     instance_path="$sub_path/$instance_name"
     mkdir $instance_path
     tar -xvzf $sub_f -C $instance_path
+    gunzip $instance_path/$job_name/$job_file_name.log*.gz
     rm -f $sub_f
     #remove archive file after it has been extracted
 
+    for log_f in $instance_path/$job_name/$job_file_name.log*
+    do
+      echo "Processing $log_f"
+      outfile=$log_f.out
+      echo "Output File: $outfile"
+      sed -E $'s/^/\{\"index\":\{\}\}\\\n/g' $log_f > $outfile
+
+      nohup curl -s -H "Content-Type: application/x-ndjson" -XPOST  "$es_host/$job_name/$mapping_name/_bulk" --data-binary @$outfile  2>&1
+    done
+    #parse and upload all job log files to remote es host
   done
   rm -f $path_name/*.tgz
 #  rm -rf $path_name
