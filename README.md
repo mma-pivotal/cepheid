@@ -1,91 +1,40 @@
-# ElasticSearch Bulk Upload Script
+# Usage
 
-This project is in a very early stage.
-Current challenge is the speed of these scripts, the execution time when parsing a big log file is somehow unacceptable.
-I am suspecting this is due to the heavy usage of echo to outfile, in other words disk IO is the main bottle neck.
-Currently only tested on MacOS. Need to do profiling on different platform and possibly change the way of parsing (load file into memory and parse at once, then output to disk).
+es_bulk.sh <es_host:port> <path_to_archive_file> <job_name>
+
+Currently you can only use cloud_controller_ng as job_name.
 
 ## Prepare ES server
 
-Go to your Kibana top page (http://<kibana_host>:5601/app/kibana#/home?\_g=()) then click **Dev Tools** on the left panel.
-Enter the following content into console and click the green triangle button.
-This should create a new index (myindex) and new doc_type (\_doc) for you.
+You can install a standalone ES stack deployment by yourself or simply use the bosh release from [here](https://github.com/making/elastic-stack-bosh-deployment)
 
-```
-PUT myindex
-{
-  "mappings": {
-    "_doc": {
-      "properties": {
-        "timestamp": {
-          "type":   "date",
-          "format": "epoch_millis"
-        }
-      }
-    }
-  }
-}
-```
+In my case I mostly used the `Minimal deployment` manifest from the above repo and deployed with BOSH.
 
-If you see error message saying index already exists, Click **Management** > **Index Management** and delete the existing index.
-This is to save the disk usage of ES server.
+## Test log file
+
+Check this [link](https://drive.google.com/file/d/14s8yqY2Vu9FQ8s0kb8lRuGIH1YqWAt5_/view?usp=sharing)
 
 ## es-bulk.sh
 
-Upload cloud_controller_ng log to specified ES server.
-Put the sample log file in the same directory of this script and run the script.
+Extract a given archive_file from PCF OPS manager and upload it to ES host, currently only support cloud_controller_ng log file.
+The temp working directory (to decompress the archive files) is /tmp, make sure you have enough free disk space.
 
-Usage:
-
-es-bulk.sh <your_es_host>
-
-After execution, go to (http://<es_host>:5601/app/kibana#/management/elasticsearch/index_management/home?\_g=())
-You should then see the **Docs Count** increased, meaning logs are being imported.
-
-Next go to **Management** > **Index Patterns** > **Create Index Pattern** , create a index pattern so that you can search it, select timestamp as timestamp filter and click Create.
-Then go to **Discover** and make sure you have select the correct Index Pattern (dropbox in upper left corner) and correct time range (From: 2018-10-17 00:00:00.000 To: 2018-10-17 23:59:59.999)
-
-## test.sh
-
-Extract a given archive_file from PCF, currently only support cloud_controller_ng and gorouter.
-The target directory is /tmp, make sure you have enough free disk space.
-
-Usage:
-
-test.sh <path_to_your_archive_file> cloud_controller_ng|gorouter
-
-Example:
-
-/test.sh /Users/Documents/cloud_controller-1539b798d482.zip cloud_controller_ng
-
-After execution you should see a file structure like below:
-
-```
-/tmp/cloud_controller-1539b798d482/
-└── cf-421763892047a2991301.cloud_controller-20181017-020536-641577571
-    ├── cloud_controller.6ee013f3-b9ec-4e09-9835-fdb20de2a169.2018-10-17-02-03-18
-    │   ├── bosh-dns
-    │   │   ├── bosh_dns.stderr.log
-    │   │   ├── bosh_dns.stdout.log
-    │   │   ├── bosh_dns_ctl.stderr.log
-    │   │   ├── bosh_dns_ctl.stdout.log
-    │   │   ├── bosh_dns_health.stderr.log
-    │   │   ├── bosh_dns_health.stdout.log
-    │   │   ├── bosh_dns_health_ctl.stderr.log
-    │   │   ├── bosh_dns_health_ctl.stdout.log
-    │   │   ├── bosh_dns_resolvconf.stderr.log
-    │   │   ├── bosh_dns_resolvconf.stdout.log
-    │   │   ├── bosh_dns_resolvconf_ctl.stderr.log
-    │   │   ├── bosh_dns_resolvconf_ctl.stdout.log
-    │   │   ├── post-start.stderr.log
-    │   │   ├── post-start.stdout.log
-    │   │   ├── pre-start.stderr.log
-    │   │   └── pre-start.stdout.log
-```
-
-Note that I didn't paste complete output here but this script should work well with multiple instances.
+After execution, the data has been imported into ES host but not searchable in Kibana yet.
+You need to create a index pattern so that you can search it (check this [link](https://www.elastic.co/guide/en/kibana/current/tutorial-define-index.html)), select \*timestamp as timestamp filter.
+Then go to **Discover** in Kibana and make sure you have select the correct Index Pattern (dropbox in upper left corner) and correct time range (for the sample log file From: 2018-10-03 00:00:00.000 To: 2018-10-17 23:59:59.999).
 
 ## switch_timestamp.sh
 
 A simple script to switch the epoch timestamp in cloud controller log file to human readable format, currently only support MacOS.
 Need to add support for Ubuntu and probably also support milliseconds in epoch timestamp.
+
+## ToDo
+
+There a lot of things I want to do with this project in the future.
+
+1) Make this script portable for any platform, probably meaning refactoring with Python.
+2) Support any BOSH job log (currently only cloud_controller_ng).
+3) Make a web application which accepts archive log file upload and do all other jobs in backend containers (probably on PKS).
+4) Provide a company wide platform for troubleshooting logs so that CEs in different regions can easily share their investigation progress by posting ES search link in the case notes.
+
+I really hope this project can save us lots of time when troubleshooting vast logs from PCF.
