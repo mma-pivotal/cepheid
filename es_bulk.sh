@@ -1,6 +1,7 @@
 #! /bin/bash
 es_host="10.193.26.207:9200"
 mapping_name="log"
+#hardcode es_host and mapping_name for now
 
 if [[ ! -z "$1" ]]
 then
@@ -22,12 +23,12 @@ case "$job_name" in
   cloud_controller_ng)
     job_file_name="cloud_controller_ng"
     ;;
-  gorouter)
-    job_file_name="access"
-    ;;
+#  gorouter)
+#    job_file_name="access"
+#    ;;
   *)
     echo "usage: es_bulk.sh <path_to_archive_file> <job_name>"
-    echo "currently only support cloud_controller_ng|gorouter logs"
+    echo "currently only support cloud_controller_ng logs"
     exit 1
     ;;
 esac
@@ -80,6 +81,8 @@ do
   done
   rm -f $path_name/*.tgz
 #  rm -rf $path_name
-  exit 0
+  break
   #only extract once as each instance contains the logs for all instances, so no need to extract all instances
 done
+
+rm -rf $path_name
