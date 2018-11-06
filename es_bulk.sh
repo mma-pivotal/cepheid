@@ -1,19 +1,26 @@
 #! /bin/bash
-es_host="10.193.26.207:9200"
 mapping_name="log"
 #hardcode es_host and mapping_name for now
 
 if [[ ! -z "$1" ]]
 then
-  archive_file=$1
+  es_host=$1
 else
-  echo "Archive File Not Found"
+  echo "ES hostname not provided"
   exit 1
 fi
 
 if [[ ! -z "$2" ]]
 then
-  job_name=$2
+  archive_file=$2
+else
+  echo "Archive File Not Found"
+  exit 1
+fi
+
+if [[ ! -z "$3" ]]
+then
+  job_name=$3
 else
   echo "No Job Name Specified"
   exit 1
