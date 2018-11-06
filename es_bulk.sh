@@ -64,11 +64,17 @@ do
     for log_f in $instance_path/$job_name/$job_file_name.log*
     do
       echo "Processing $log_f"
+      tempfile=$log_f.tmp
       outfile=$log_f.out
       echo "Output File: $outfile"
-      sed -E $'s/^/\{\"index\":\{\}\}\\\n/g' $log_f > $outfile
+
+      sed -E 's|([0-9]{10})\.([0-9]{3})[0-9]+|\1\2|g' $log_f > $tempfile
+      #change timestamp
+      sed -E $'s/^/\{\"index\":\{\}\}\\\n/g' $tempfile > $outfile
+      #add metadata
 
       nohup curl -s -H "Content-Type: application/x-ndjson" -XPOST  "$es_host/$job_name/$mapping_name/_bulk" --data-binary @$outfile  2>&1
+      rm $tempfile $outfile
     done
     #parse and upload all job log files to remote es host
   done
