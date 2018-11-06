@@ -44,6 +44,16 @@ then
   exit 1
 fi
 
+create_index(){
+  echo "creating new index"
+  ## file_name="cloud_controller-1539b798d482.zip"
+  index_name=`echo $file_name  | cut -d . -f 1  | sed 's/\-/\./'`
+  object='{"mappings":{"log":{"properties":{"timestamp":{"type":"date","format":"epoch_millis"}}}}}'
+  nohup curl -H "Content-Type: application/json"  -XPUT  "$es_host/$index_name" -d $object  2>&1
+}
+
+create_index
+
 for f in $path_name/*
 do
   #first extrcation, extract instance logs from deployment
