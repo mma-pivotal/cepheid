@@ -27,6 +27,12 @@ while [ "$1" != "" ]; do
     shift
 done
 
+if [ -z $archive_file ]
+then
+    usage
+    exit 1
+fi
+
 case "job_name" in
   cloud_controller_ng)
     job_file_name="cloud_controller_ng.log*"
