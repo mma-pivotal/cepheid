@@ -21,7 +21,7 @@ while [ "$1" != "" ]; do
         -h | --host )           shift       
                                 es_host=$1
                                 ;;
-        * )                     usage()
+        * )                     usage
                                 exit 1
     esac
     shift
