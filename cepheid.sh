@@ -5,6 +5,18 @@ function usage(){
     echo "cepheid.sh -p <path_to_archive> -h <es_host:port> -j <job_name>"
 }
 
+function decompress_opsman_archive(){
+    file_name=$(echo $archive_file | rev | cut -f 2 -d "." | cut -f 1 -d "/" | rev)
+    path_name="/tmp/$file_name"
+    mkdir $path_name
+    unzip $archive_file -d $path_name    
+    if [[ $? -ne 0 ]]
+    then
+      echo "Failed to Extract $archive_file"
+      exit 1
+    fi
+}
+
 es_index_name="my_index"
 es_mapping_name="_doc"
 #default index and mapping name
@@ -52,16 +64,18 @@ case "job_name" in
     ;;
 esac
 
-file_name=$(echo $archive_file | rev | cut -f 2 -d "." | cut -f 1 -d "/" | rev)
-path_name="/tmp/$file_name"
-mkdir $path_name
-unzip $archive_file -d $path_name
+#default archive file structure from ops manager 
+#instance_name_someguid/
+#├──deployment_name_deployment_guid(job logs)
+#   ├──bosh_job_name_instance_guid(multi-if-multi-instances)
+#      ├──cf_job_name(all jobs managed by monit)
+#├──deployment_name_deployment_guid(bosh agent logs)
 
-if [[ $? -ne 0 ]]
-then
-  echo "Failed to Extract $archive_file"
-  exit 1
-fi
+decompress_opsman_archive
+
+#The expected behavior after decompress is to have 2 zip files as below.
+#├──deployment_name_deployment_guid(job logs)
+#├──deployment_name_deployment_guid(bosh agent logs)
 
 for f in $path_name/*
 do
