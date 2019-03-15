@@ -17,6 +17,11 @@ function decompress_opsman_archive(){
     fi
 }
 
+function upload(){
+    echo "upload: testing"
+ #     fluent-bit -R parsers.conf -i tail -p path=$log_f -p parser=$parser_name -p exit_on_eof='On' -o es://$es_host/$es_index_name/$es_mapping_name
+}
+
 es_index_name="my_index"
 es_mapping_name="_doc"
 #default index and mapping name
@@ -112,7 +117,7 @@ do
           sed -E -i .bak 's/([0-9]{10}\.[0-9]{7})/\"\1\"/' $log_f
           rm *.bak
       fi
-      fluent-bit -R parsers.conf -i tail -p path=$log_f -p parser=$parser_name -p exit_on_eof='On' -o es://$es_host/$es_index_name/$es_mapping_name
+      upload
     done
     #parse and upload all job log files to remote es host
   done
