@@ -6,10 +6,7 @@ function usage(){
 }
 
 function decompress_opsman_archive(){
-    file_name=$(echo $archive_file | rev | cut -f 2 -d "." | cut -f 1 -d "/" | rev)
-    path_name="/tmp/$file_name"
-    mkdir $path_name
-    unzip $archive_file -d $path_name    
+    unzip $archive_file -d $path_name
     if [[ $? -ne 0 ]]
     then
       echo "Failed to Extract $archive_file"
@@ -17,9 +14,20 @@ function decompress_opsman_archive(){
     fi
 }
 
+<<<<<<< HEAD
 function upload(){
     echo "upload: testing"
  #     fluent-bit -R parsers.conf -i tail -p path=$log_f -p parser=$parser_name -p exit_on_eof='On' -o es://$es_host/$es_index_name/$es_mapping_name
+=======
+function is_opsman(){
+# check whether the archive file comes from opsman or not
+    return 0
+}
+
+function is_deployment(){
+# check whether the archive file comes from bosh deployment or not
+    return 0
+>>>>>>> 6b3e1f44d03324b25b3407aa2bf79f25ef2cbf35
 }
 
 es_index_name="my_index"
@@ -35,7 +43,7 @@ while [ "$1" != "" ]; do
                                 job_name=$1
                                 es_index_name=$1
                                 ;;
-        -h | --host )           shift       
+        -h | --host )           shift
                                 es_host=$1
                                 ;;
         * )                     usage
@@ -59,7 +67,7 @@ case "job_name" in
     parser_name="gorouter"
     job_file_name="access.log*"
     ;;
-  diego_brain)   
+  diego_brain)
     parser_name="json"
     job_file_name="auctioneer.stdout.log*"
     ;;
@@ -69,14 +77,18 @@ case "job_name" in
     ;;
 esac
 
-#default archive file structure from ops manager 
+file_name=$(echo $archive_file | rev | cut -f 2 -d "." | cut -f 1 -d "/" | rev)
+path_name="/tmp/$file_name"
+mkdir $path_name
+
+#default archive file structure from ops manager
 #instance_name_someguid/
 #├──deployment_name_deployment_guid(job logs)
 #   ├──bosh_job_name_instance_guid(multi-if-multi-instances)
 #      ├──cf_job_name(all jobs managed by monit)
 #├──deployment_name_deployment_guid(bosh agent logs)
 
-decompress_opsman_archive
+if is_opsman; then decompress_opsman_archive; fi
 
 #The expected behavior after decompress is to have 2 zip files as below.
 #├──deployment_name_deployment_guid(job logs)
