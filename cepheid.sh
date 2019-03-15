@@ -74,11 +74,15 @@ case "job_name" in
     echo "currently only support cloud_controller_ng diego_brain logs"
     exit 1
     ;;
+  echo "jobname=$job_name"
+  echo "job_file_name=$job_file_name"
+  echo "parser_name=$parser_name"
 esac
 
 file_name=$(echo $archive_file | rev | cut -f 2 -d "." | cut -f 1 -d "/" | rev)
 path_name="/tmp/$file_name"
 mkdir $path_name
+echo "path=$path_name"
 
 #default archive file structure from ops manager
 #instance_name_someguid/
