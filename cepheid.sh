@@ -14,11 +14,11 @@ function decompress_opsman_archive(){
     fi
 }
 
-<<<<<<< HEAD
 function upload(){
     echo "upload: testing"
  #     fluent-bit -R parsers.conf -i tail -p path=$log_f -p parser=$parser_name -p exit_on_eof='On' -o es://$es_host/$es_index_name/$es_mapping_name
-=======
+}
+
 function is_opsman(){
 # check whether the archive file comes from opsman or not
     return 0
@@ -27,7 +27,6 @@ function is_opsman(){
 function is_deployment(){
 # check whether the archive file comes from bosh deployment or not
     return 0
->>>>>>> 6b3e1f44d03324b25b3407aa2bf79f25ef2cbf35
 }
 
 es_index_name="my_index"
