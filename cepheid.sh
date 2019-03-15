@@ -57,7 +57,7 @@ then
     exit 1
 fi
 
-case "job_name" in
+case "$job_name" in
   cloud_controller_ng)
     job_file_name="cloud_controller_ng.log*"
     parser_name="json"
@@ -74,10 +74,11 @@ case "job_name" in
     echo "currently only support cloud_controller_ng diego_brain logs"
     exit 1
     ;;
-  echo "jobname=$job_name"
-  echo "job_file_name=$job_file_name"
-  echo "parser_name=$parser_name"
 esac
+
+echo "job=$job_name"
+echo "job_file_name=$job_file_name"
+echo "parser_name=$parser_name"
 
 file_name=$(echo $archive_file | rev | cut -f 2 -d "." | cut -f 1 -d "/" | rev)
 path_name="/tmp/$file_name"
