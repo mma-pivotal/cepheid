@@ -1,8 +1,8 @@
 # Usage
 
-es_bulk.sh <es_host:port> <path_to_archive_file> <job_name>
+cepheid.sh  -p <path_to_archive> -h <es_host:port> -j <job_name>
 
-Currently you can only use cloud_controller_ng as job_name.
+Currently you can only use cloud_controller, gorouter, diego_brain as job_name.
 
 ## Prepare ES server
 
@@ -14,9 +14,9 @@ In my case I mostly used the `Minimal deployment` manifest from the above repo a
 
 Check this [link](https://drive.google.com/file/d/14s8yqY2Vu9FQ8s0kb8lRuGIH1YqWAt5_/view?usp=sharing)
 
-## es-bulk.sh
+## cepheid.sh
 
-Extract a given archive_file from PCF OPS manager and upload it to ES host, currently only support cloud_controller_ng log file.
+Extract a given archive_file from PCF OPS manager and upload it to ES host.
 The temp working directory (to decompress the archive files) is /tmp, make sure you have enough free disk space.
 
 After execution, the data has been imported into ES host but not searchable in Kibana yet.
